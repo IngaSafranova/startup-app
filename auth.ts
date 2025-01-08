@@ -1,5 +1,8 @@
-import NextAuth from "next-auth";
+// https://authjs.dev/getting-started/providers/github
 
-export const { handlers, signIn, signOut, auth } = NextAuth(config: {
-  providers:[],
-})
+import NextAuth from "next-auth";
+import Github from "next-auth/providers/github";
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  providers: [Github],
+});
