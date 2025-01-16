@@ -12,8 +12,8 @@ const nextConfig: NextConfig = {
     }]
   },
   
-    ppr: 'incremental'
-  ,
+   // ppr: 'incremental',
+  
   devIndicators: {
     appIsrStatus: true,
     buildActivity: true,
