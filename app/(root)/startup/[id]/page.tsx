@@ -4,16 +4,27 @@ import { STARTUP_BY_ID_QUERY } from '@/sanity/lib/queries';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import React from 'react'
+import React, { Suspense } from 'react'
+import markdownit from 'markdown-it';
+import { Skeleton } from '@/components/ui/skeleton';
+import View from '@/components/View';
+
+//import shadcn components in the terminal
+// npx shadcn@latest add name_of_component
+
 
 //! working only in Canary Nextjs version!
 //export const experimental_ppr = true;
 
+const md = markdownit()
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id
 
   const post = await client.fetch(STARTUP_BY_ID_QUERY, { id });
-  if(!post) return notFound()
+  if(!post) return notFound();
+
+  const parsedContent = md.render(post?.pitch || '');
+
   
   return (
     <>
@@ -39,11 +50,25 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
                 <p className='text-16-medium !text-black-300' >@{post.author.username} </p>
               </div>
             </Link>
+            <p className='category-tag' >{post.category} </p>
 
           </div>
+          <h3 className='text-30-bold' >Pitch Details</h3>
+          {/* react prevents by default plaint text to safety reasons, so we need explicitly say that it is safe */}
+          {parsedContent ? (
+            <article className='prose max-w-4xl font-work-sans break-all'
+            dangerouslySetInnerHTML={{__html: parsedContent}} />
+          ) : (
+              <p className='no-result' >No details provided</p>
+          ) }
         </div>
-
+        <hr className='divider' />
+        {/* EDITOR SELECTED STARTUPS */}
       </section>
+      {/** THIS PART IN THE VIDEO IS DINAMIC RENDERING */}
+      <Suspense fallback={<Skeleton className='view_skeleton' />}>
+      <View id={id} />
+      </Suspense>
     </>
   );
 }
