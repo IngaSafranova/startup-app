@@ -1,15 +1,47 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useActionState, useState } from 'react'
 
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import MDEditor from "@uiw/react-md-editor";
+import { Button } from './ui/button';
+import { Send } from 'lucide-react';
+import { formSchema } from '@/lib/validation';
 
 const StartupForm = () => {
   // check for errors
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [pitch, setPitch] = useState("**Hello world!!!**");
+  const [pitch, setPitch] = useState("");
+
+  // submiting the form is not instant action
+  // use new useActionState Hook
+
+  // action for ActionState
+  const handleFormSubmit = async (prevState: any, formData: FormData) => {
+    try {
+      const formValues = {
+        title: formData.get('title') as string,
+        title: formData.get('description') as string,
+        title: formData.get('category') as string,
+        title: formData.get('link') as string,
+        pitch,
+
+      }
+      // validate form values
+      await formSchema._parseAsync(formValues)
+      //const result = await createIdea(prevState, formData, pitch)
+      // console.log(result)
+    } catch(error){}
+  }
+
+  const [state, formAction, isPending] = useActionState(handleFormSubmit, initialState : {
+    error: '',
+    status: 'INITIAL'
+
+  })
+  
+  
   return (
     <form action={() => {}} className="startup-form">
       <div>
@@ -80,11 +112,25 @@ const StartupForm = () => {
         <label htmlFor="pitch" className="startup-form_label">
           Pitch
         </label>
-        <MDEditor value={pitch} onChange={(value)=>setPitch(value as string)} />
-        
-
-        {errors.pitch && <p className="startup-form_error">{errors.pitch}</p>}
+        <MDEditor value={pitch} onChange={(value) => setPitch(value as string)}
+          id='pitch'
+          preview='edit'
+          height={300}
+          style={{ borderRadius: 20, overflow: 'hidden' }}
+          textareaProps={{
+            placeholder: 'Briefly describe your idea'
+          }}
+          previewOptions={{
+            disallowedElements:['style'],
+          }}
+        />
+         {errors.pitch && <p className="startup-form_error">{errors.pitch}</p>}
       </div>
+      <Button type='submit' className='startup-form_btn text-white' disabled={isPending}
+      >
+        {isPending ? 'Submitting...' : 'Submit your pitch'}
+        <Send className='size-6 ml-2'/>
+      </Button>
     </form>
   );
 }
