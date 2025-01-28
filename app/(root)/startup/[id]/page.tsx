@@ -14,7 +14,7 @@ import View from '@/components/View';
 
 
 //! working only in Canary Nextjs version!
-//export const experimental_ppr = true;
+export const experimental_ppr = true;
 
 const md = markdownit()
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
