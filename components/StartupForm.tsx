@@ -20,6 +20,7 @@ const StartupForm = () => {
   const { toast } = useToast()
   const router = useRouter()
 
+
   // submiting the form is not instant action
   // use new useActionState Hook
 
@@ -40,11 +41,12 @@ const StartupForm = () => {
       const result = await createPitch(prevState, formData, pitch)
       //console.log(result)
       if (result.status == 'SUCCESS') {
-        toast({
-          title: "Succsess",
-          description: "Your pitch has been created successfully",
-          
-        });
+
+  toast({
+    title: "Succsess",
+    description: "Your pitch has been created successfully",
+  });
+        
         router.push(`/startup/${result._id}`)
       }
       return result
